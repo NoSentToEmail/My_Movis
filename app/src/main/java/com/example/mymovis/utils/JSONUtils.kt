@@ -1,5 +1,6 @@
 package com.example.mymovis.utils
 
+import android.util.Log
 import com.example.mymovis.data.Movie
 import org.json.JSONObject
 
@@ -16,9 +17,16 @@ class JSONUtils {
     private val KEY_VOTE_AVARAGE = "vote_average"
     private val KEY_RELEASE_DATA = "release_date"
 
+
+    val BASE_POSTER_URL = "https://image.tmdb.org/t/p/"
+    val SMALL_POSTER_SIZE = "w185"
+    val BIG_POSTER_SIZE = "w780"
+
+
     fun getMoviesFromJSON(jsonObject: JSONObject): ArrayList<Movie> {
         val result = ArrayList<Movie>()
         if (jsonObject == null) {
+            Log.d("JSONUtils", "JSON object is null")
             return result
         }
         try {
@@ -30,7 +38,8 @@ class JSONUtils {
                 val title = objectMovie.getString(KEY_TITLE)
                 val originalTitle = objectMovie.getString(KEY_ORIGINAL_TITLE)
                 val overView = objectMovie.getString(KEY_OVERVIEW)
-                val posterPath = objectMovie.getString(KEY_POSTER_PATH)
+                val posterPath = BASE_POSTER_URL + SMALL_POSTER_SIZE + objectMovie.getString(KEY_POSTER_PATH)
+                val bigPosterPath = BASE_POSTER_URL + BIG_POSTER_SIZE + objectMovie.getString(KEY_POSTER_PATH)
                 val backdrop_Path = objectMovie.getString(KEY_BACKDROP_PATH)
                 val voteAvarage = objectMovie.getDouble(KEY_VOTE_AVARAGE)
                 val releaseData = objectMovie.getString(KEY_RELEASE_DATA)
@@ -41,6 +50,7 @@ class JSONUtils {
                     originalTitle,
                     overView,
                     posterPath,
+                    bigPosterPath,
                     backdrop_Path,
                     voteAvarage,
                     releaseData
@@ -52,4 +62,5 @@ class JSONUtils {
         }
         return result
     }
+
 }

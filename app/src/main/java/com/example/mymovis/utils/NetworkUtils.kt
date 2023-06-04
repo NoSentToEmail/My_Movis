@@ -10,6 +10,8 @@ import java.net.HttpURLConnection
 import java.net.URL
 
 class NetworkUtils {
+
+
     private val API_KEY = "e12b9ed2023f9ce765d45a1deddfe191"
     private val BASE_URL = "https://api.themoviedb.org/3/discover/movie"
     private val PARAMS_API_KEY = "api_key"
