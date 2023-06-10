@@ -11,6 +11,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mymovis.MovieAdapter
@@ -83,15 +84,19 @@ class MainActivity : AppCompatActivity() {
         })
 
 
-        viewModel.getMovies().observe(this, Observer { movies ->
-            if (movies != null) {
-                Log.d("MainActivity", "Movies loaded: ${movies.size}")
-                movieAdapter.setMovies(movies as MutableList<Movie>)
-                recyclerViewPoster.scrollToPosition(0)
-            } else {
-                Log.e("MainActivity", "Movies list is null")
-            }
-        })
+        lifecycleScope.launchWhenCreated {
+            viewModel.getMovies().observe(this@MainActivity, Observer { movies ->
+                if (movies != null) {
+                    Log.d("MainActivity", "Movies loaded: ${movies.size}")
+                    movieAdapter.setMovies(movies as MutableList<Movie>)
+                    recyclerViewPoster.scrollToPosition(0)
+                } else {
+                    Log.e("MainActivity", "Movies list is null")
+                }
+            })
+
+            downloadData(NetworkUtils().POPULARITY, 1)
+        }
     }
 
     private fun setMethodOfSort(isTopRated: Boolean) {
