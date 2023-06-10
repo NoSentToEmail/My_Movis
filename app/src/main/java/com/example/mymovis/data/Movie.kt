@@ -1,6 +1,12 @@
 package com.example.mymovis.data
 
-class Movie(
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+@Entity(tableName = "movies")
+
+open class Movie(
+     @PrimaryKey
      var id: Int,
      var voteCount: Int,
      var title: String,

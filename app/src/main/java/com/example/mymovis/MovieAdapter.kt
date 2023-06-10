@@ -10,7 +10,7 @@ import com.squareup.picasso.Picasso
 
 class MovieAdapter : RecyclerView.Adapter<MovieAdapter.MovieViewHolder>() {
 
-    private var movies = ArrayList<Movie>()
+    private var movies: MutableList<Movie> = mutableListOf()
     private var onPosterClickListener: OnPosterClickListener? = null
     private var onReachEndListener: OnReachEndListener? = null
 
@@ -40,7 +40,7 @@ class MovieAdapter : RecyclerView.Adapter<MovieAdapter.MovieViewHolder>() {
 
     override fun onBindViewHolder(holder: MovieViewHolder, position: Int) {
 
-        if (position > movies.size -6 && onReachEndListener != null) {
+        if (position >= movies.size -6 && onReachEndListener != null) {
             onReachEndListener?.onReachEnd()
         }
         val movie = movies[position]
@@ -51,18 +51,20 @@ class MovieAdapter : RecyclerView.Adapter<MovieAdapter.MovieViewHolder>() {
         return movies.size
     }
 
-    fun setMovies(movies: ArrayList<Movie>) {
+    fun setMovies(movies: MutableList<Movie>) {
         this.movies = movies
         notifyDataSetChanged()
     }
 
-    fun addMovies(movies: ArrayList<Movie>) {
-        this.movies.addAll(movies)
-        notifyDataSetChanged()
+    fun addMovies(movies: MutableList<Movie>) {
+        movies?.let {
+            this.movies.addAll(it)
+            notifyDataSetChanged()
+        }
     }
 
-    fun getMovies(): ArrayList<Movie> {
-        return movies
+    fun getMovies(): MutableList<Movie> {
+        return movies ?: mutableListOf()
     }
 
     inner class MovieViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
