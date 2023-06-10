@@ -1,7 +1,10 @@
 package com.example.mymovis
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -95,5 +98,29 @@ class DetailActivity : AppCompatActivity() {
         }else {
             imageViewAddToFaivory.setImageResource(R.drawable.favourite_remove)
         }
+    }
+
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        val inflater = menuInflater
+        inflater.inflate(R.menu.main_menu, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        val id: Int = item.itemId
+        when (id) {
+            R.id.itemMain -> {
+                val intent = Intent(this, MainActivity::class.java)
+                startActivity(intent)
+            }
+            R.id.itemFavourite -> {
+                val intent = Intent(this, FavouriteActivity::class.java)
+                startActivity(intent)
+            }
+
+
+        }
+        return super.onOptionsItemSelected(item)
     }
 }

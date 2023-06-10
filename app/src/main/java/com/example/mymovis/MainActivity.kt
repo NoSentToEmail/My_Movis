@@ -5,7 +5,12 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.widget.CompoundButton
+import android.widget.ImageView
+import android.widget.Spinner
 import android.widget.Switch
 import android.widget.TextView
 import android.widget.Toast
@@ -46,6 +51,10 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        openOptionsMenu()
+
+
         viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
         textViewPopularity = findViewById(R.id.textViewPopularity)
         textViewTopRated = findViewById(R.id.textViewTopRated)
@@ -92,6 +101,26 @@ class MainActivity : AppCompatActivity() {
                 Log.e("MainActivity", "Movies list is null")
             }
         })
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        val inflater = menuInflater
+        inflater.inflate(R.menu.main_menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.itemMain -> {
+                val intent = Intent(this, MainActivity::class.java)
+                startActivity(intent)
+            }
+            R.id.itemFavourite -> {
+                val intent = Intent(this, FavouriteActivity::class.java)
+                startActivity(intent)
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     private fun setMethodOfSort(isTopRated: Boolean) {
