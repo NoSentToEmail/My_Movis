@@ -65,29 +65,4 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         database.movieDao().deleteFavouriteMovies(movie)
     }
 
-    //    suspend fun toggleFavouriteMovie(movie: Movie): FavouriteMovie {
-//        var favouriteMovie = getFavouriteMovieById(movie.id)
-//        if (favouriteMovie == null) {
-//            insertFavouriteMovies(FavouriteMovie(movie))
-//        } else {
-//            deleteFavouriteMovies(favouriteMovie)
-//        }
-//        return favouriteMovie
-//    }
-//    suspend fun toggleFavouriteMovie(movie: Movie): FavouriteMovie? {
-//        var favouriteMovie = getFavouriteMovieById(movie.id)
-//        Log.i("Detail", "on start")
-//        if (favouriteMovie == null) {
-//            insertFavouriteMovies(FavouriteMovie(movie))
-//            favouriteMovie = getFavouriteMovieById(movie.id)
-//            Log.i("Detail", "if")
-//        } else {
-//            deleteFavouriteMovies(favouriteMovie)
-//            Log.i("Detail", "else")
-//        }
-//        Log.i("Detail", "return")
-//        return favouriteMovie
-//    }
-
-
 }

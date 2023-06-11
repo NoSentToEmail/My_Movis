@@ -43,7 +43,7 @@ class DetailActivity : AppCompatActivity() {
     private lateinit var textViewReleaseDate: TextView
     private lateinit var textViewLabelDescription: TextView
     private lateinit var textViewOverView: TextView
-    private lateinit var imageViewAddToFaivory : ImageView
+    private lateinit var imageViewAddToFaivory: ImageView
 
     private lateinit var recycleViewTrailers: RecyclerView
     private lateinit var recyclerViewReviews: RecyclerView
@@ -61,6 +61,7 @@ class DetailActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_detail)
+
         imageViewBigPoster = findViewById(R.id.imageViewBigPoster)
         textViewLabelTitle = findViewById(R.id.textViewLabelTitle)
         textViewTitle = findViewById(R.id.textViewTitle)
@@ -98,49 +99,62 @@ class DetailActivity : AppCompatActivity() {
             viewModel.viewModelScope.launch {
                 if (favouriteMovie == null) {
                     viewModel.insertFavouriteMovies(FavouriteMovie(movie))
-                    Toast.makeText(this@DetailActivity, "Added to favorites", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@DetailActivity, "Added to favorites", Toast.LENGTH_SHORT)
+                        .show()
                 } else {
                     viewModel.deleteFavouriteMovies(favouriteMovie!!)
-                    Toast.makeText(this@DetailActivity, "Removed from favorites", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this@DetailActivity,
+                        "Removed from favorites",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
                 setFavourite()
             }
         }
+//
+//        recycleViewTrailers = findViewById(R.id.recuclerViewTrailers)
+//        recyclerViewReviews = findViewById(R.id.recuclerViewReviews)
+//        reviewAdapter = ReviewAdapter()
+//        trailderAdapter = TrailerAdapter()
+//
+//
+//        val networkUtils = NetworkUtils()
+//        val jsonUntil = JSONUtils()
+//        recyclerViewReviews.layoutManager = LinearLayoutManager(this)
+//        recycleViewTrailers.layoutManager = LinearLayoutManager(this)
+//        recyclerViewReviews.adapter = reviewAdapter
+//        recycleViewTrailers.adapter = trailderAdapter
+//
+//
+//        val jsonObjectsTrailer: JSONObject? = networkUtils.getJSONForVideos(movie.id)
+//        val jsonObjectReviews: JSONObject? = networkUtils.getJSONForReviews(movie.id)
+//
+//        val trailers: MutableList<Trailer>? =
+//            jsonObjectsTrailer?.let { jsonUntil.getTrailerFromJSON(it) }
+//        val reviews: MutableList<Review>? =
+//            jsonObjectReviews?.let { jsonUntil.getReviewsFromJSON(it) }
+//
+//
+//        reviews?.let { reviewAdapter.setReviews(it) }
+//        trailers?.let { trailderAdapter.setTrailers(it) }
+//
+//        trailderAdapter.setOnTrailerClickListener(object :
+//            TrailerAdapter.OnTrailerClickListener {
+//            override fun onTrailerClick(url: String) {
+//                Toast.makeText(this@DetailActivity, url, Toast.LENGTH_SHORT).show()
+//            }
+//        })
+//
 
-        recycleViewTrailers = findViewById(R.id.recuclerViewTrailers)
-        recyclerViewReviews = findViewById(R.id.recuclerViewReviews)
-        reviewAdapter = ReviewAdapter()
-        trailderAdapter = TrailerAdapter()
-
-        trailderAdapter.setOnTrailerClickListener(object : TrailerAdapter.OnTrailerClickListener {
-            override fun onTrailerClick(url: String) {
-                Toast.makeText(this@DetailActivity, url, Toast.LENGTH_SHORT).show()
-            }
-        })
-
-        val networkUtils = NetworkUtils()
-        val jsonUntil = JSONUtils()
-        recyclerViewReviews.layoutManager = LinearLayoutManager(this)
-        recycleViewTrailers.layoutManager = LinearLayoutManager(this)
-        recyclerViewReviews.adapter = reviewAdapter
-        recycleViewTrailers.adapter = trailderAdapter
-
-        val jsonObjectsTrailer: JSONObject? = networkUtils.getJSONForVideos(movie.id)
-        val jsonObjectReviews: JSONObject? = networkUtils.getJSONForReviews(movie.id)
-        val trailers: MutableList<Trailer>? = jsonObjectsTrailer?.let { jsonUntil.getTrailerFromJSON(it) }
-        val reviews: MutableList<Review>? = jsonObjectReviews?.let { jsonUntil.getReviewsFromJSON(it) }
-
-
-        reviews?.let { reviewAdapter.setReviews(it) }
-        trailers?.let { trailderAdapter.setTrailers(it) }
     }
 
 
-    private suspend fun setFavourite(){
+    private suspend fun setFavourite() {
         favouriteMovie = viewModel.getFavouriteMovieById(id)
-        if(favouriteMovie == null){
+        if (favouriteMovie == null) {
             imageViewAddToFaivory.setImageResource(R.drawable.favourite_add_to)
-        }else {
+        } else {
             imageViewAddToFaivory.setImageResource(R.drawable.favourite_remove)
         }
     }
@@ -159,6 +173,7 @@ class DetailActivity : AppCompatActivity() {
                 val intent = Intent(this, MainActivity::class.java)
                 startActivity(intent)
             }
+
             R.id.itemFavourite -> {
                 val intent = Intent(this, FavouriteActivity::class.java)
                 startActivity(intent)
