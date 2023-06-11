@@ -57,8 +57,7 @@ class NetworkUtils {
     //Добавление отзывов с инета
     private fun buildURLToREVIEWS(id: Int): URL? {
         val url = Uri.parse(String.format(BASE_URL_REVIEWS, id)).buildUpon()
-            .appendQueryParameter(PARAMS_API_KEY, API_KEY)
-            .appendQueryParameter(PARAMS_LANGUAGE, LANGUAGE_VALUE).build()
+            .appendQueryParameter(PARAMS_API_KEY, API_KEY).build()
         try {
             return URL(url.toString())
         } catch (e: Exception) {

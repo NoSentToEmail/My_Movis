@@ -112,40 +112,41 @@ class DetailActivity : AppCompatActivity() {
                 setFavourite()
             }
         }
-//
-//        recycleViewTrailers = findViewById(R.id.recuclerViewTrailers)
-//        recyclerViewReviews = findViewById(R.id.recuclerViewReviews)
-//        reviewAdapter = ReviewAdapter()
-//        trailderAdapter = TrailerAdapter()
-//
-//
-//        val networkUtils = NetworkUtils()
-//        val jsonUntil = JSONUtils()
-//        recyclerViewReviews.layoutManager = LinearLayoutManager(this)
-//        recycleViewTrailers.layoutManager = LinearLayoutManager(this)
-//        recyclerViewReviews.adapter = reviewAdapter
-//        recycleViewTrailers.adapter = trailderAdapter
-//
-//
-//        val jsonObjectsTrailer: JSONObject? = networkUtils.getJSONForVideos(movie.id)
-//        val jsonObjectReviews: JSONObject? = networkUtils.getJSONForReviews(movie.id)
-//
-//        val trailers: MutableList<Trailer>? =
-//            jsonObjectsTrailer?.let { jsonUntil.getTrailerFromJSON(it) }
-//        val reviews: MutableList<Review>? =
-//            jsonObjectReviews?.let { jsonUntil.getReviewsFromJSON(it) }
-//
-//
-//        reviews?.let { reviewAdapter.setReviews(it) }
-//        trailers?.let { trailderAdapter.setTrailers(it) }
-//
-//        trailderAdapter.setOnTrailerClickListener(object :
-//            TrailerAdapter.OnTrailerClickListener {
-//            override fun onTrailerClick(url: String) {
-//                Toast.makeText(this@DetailActivity, url, Toast.LENGTH_SHORT).show()
-//            }
-//        })
-//
+
+        recycleViewTrailers = findViewById(R.id.recuclerViewTrailers)
+        recyclerViewReviews = findViewById(R.id.recuclerViewReviews)
+        reviewAdapter = ReviewAdapter()
+        trailderAdapter = TrailerAdapter()
+
+
+        val networkUtils = NetworkUtils()
+        val jsonUntil = JSONUtils()
+        recyclerViewReviews.layoutManager = LinearLayoutManager(this)
+        recycleViewTrailers.layoutManager = LinearLayoutManager(this)
+        recyclerViewReviews.adapter = reviewAdapter
+        recycleViewTrailers.adapter = trailderAdapter
+
+        lifecycleScope.launch {
+            movie = withContext(Dispatchers.IO) { viewModel.getMovieById(id) }
+            val jsonObjectsTrailer: JSONObject? = networkUtils.getJSONForVideos(movie.id)
+            val jsonObjectReviews: JSONObject? = networkUtils.getJSONForReviews(movie.id)
+
+            val trailers: MutableList<Trailer>? =
+                jsonObjectsTrailer?.let { jsonUntil.getTrailerFromJSON(it) }
+            val reviews: MutableList<Review>? =
+                jsonObjectReviews?.let { jsonUntil.getReviewsFromJSON(it) }
+
+
+            reviews?.let { reviewAdapter.setReviews(it) }
+            trailers?.let { trailderAdapter.setTrailers(it) }
+
+            trailderAdapter.setOnTrailerClickListener(object :
+                TrailerAdapter.OnTrailerClickListener {
+                override fun onTrailerClick(url: String) {
+                    Toast.makeText(this@DetailActivity, url, Toast.LENGTH_SHORT).show()
+                }
+            })
+        }
 
     }
 

@@ -127,17 +127,17 @@
             android:id="@+id/recuclerViewTrailers"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            app:layout_constraintTop_toBottomOf="@+id/textViewOverView"
-            app:layout_constraintEnd_toStartOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textViewOverView" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recuclerViewReviews"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            app:layout_constraintTop_toBottomOf="@+id/recuclerViewTrailers"
-            app:layout_constraintEnd_toStartOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/recuclerViewTrailers" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </ScrollView>
