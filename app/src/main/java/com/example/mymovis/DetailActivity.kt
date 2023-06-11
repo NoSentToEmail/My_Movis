@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.ArrayAdapter
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -18,6 +19,15 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import androidx.lifecycle.viewModelScope
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.mymovis.adapters.ReviewAdapter
+import com.example.mymovis.adapters.TrailerAdapter
+import com.example.mymovis.data.Review
+import com.example.mymovis.data.Trailer
+import com.example.mymovis.utils.JSONUtils
+import com.example.mymovis.utils.NetworkUtils
+import org.json.JSONObject
 
 
 class DetailActivity : AppCompatActivity() {
@@ -34,6 +44,12 @@ class DetailActivity : AppCompatActivity() {
     private lateinit var textViewLabelDescription: TextView
     private lateinit var textViewOverView: TextView
     private lateinit var imageViewAddToFaivory : ImageView
+
+    private lateinit var recycleViewTrailers: RecyclerView
+    private lateinit var recyclerViewReviews: RecyclerView
+
+    private lateinit var reviewAdapter: ReviewAdapter
+    private lateinit var trailderAdapter: TrailerAdapter
 
     private var favouriteMovie: FavouriteMovie? = null
 
@@ -90,7 +106,36 @@ class DetailActivity : AppCompatActivity() {
                 setFavourite()
             }
         }
+
+        recycleViewTrailers = findViewById(R.id.recuclerViewTrailers)
+        recyclerViewReviews = findViewById(R.id.recuclerViewReviews)
+        reviewAdapter = ReviewAdapter()
+        trailderAdapter = TrailerAdapter()
+
+        trailderAdapter.setOnTrailerClickListener(object : TrailerAdapter.OnTrailerClickListener {
+            override fun onTrailerClick(url: String) {
+                Toast.makeText(this@DetailActivity, url, Toast.LENGTH_SHORT).show()
+            }
+        })
+
+        val networkUtils = NetworkUtils()
+        val jsonUntil = JSONUtils()
+        recyclerViewReviews.layoutManager = LinearLayoutManager(this)
+        recycleViewTrailers.layoutManager = LinearLayoutManager(this)
+        recyclerViewReviews.adapter = reviewAdapter
+        recycleViewTrailers.adapter = trailderAdapter
+
+        val jsonObjectsTrailer: JSONObject? = networkUtils.getJSONForVideos(movie.id)
+        val jsonObjectReviews: JSONObject? = networkUtils.getJSONForReviews(movie.id)
+        val trailers: MutableList<Trailer>? = jsonObjectsTrailer?.let { jsonUntil.getTrailerFromJSON(it) }
+        val reviews: MutableList<Review>? = jsonObjectReviews?.let { jsonUntil.getReviewsFromJSON(it) }
+
+
+        reviews?.let { reviewAdapter.setReviews(it) }
+        trailers?.let { trailderAdapter.setTrailers(it) }
     }
+
+
     private suspend fun setFavourite(){
         favouriteMovie = viewModel.getFavouriteMovieById(id)
         if(favouriteMovie == null){

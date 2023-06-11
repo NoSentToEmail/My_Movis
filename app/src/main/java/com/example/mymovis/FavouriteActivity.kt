@@ -10,6 +10,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.mymovis.adapters.MovieAdapter
 import com.example.mymovis.data.FavouriteMovie
 import com.example.mymovis.data.MainViewModel
 import com.example.mymovis.data.Movie

@@ -1,16 +1,11 @@
 package com.example.mymovis
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
-import android.view.MenuInflater
 import android.view.MenuItem
-import android.widget.CompoundButton
-import android.widget.ImageView
-import android.widget.Spinner
 import android.widget.Switch
 import android.widget.TextView
 import android.widget.Toast
@@ -18,13 +13,11 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.mymovis.MovieAdapter
-import com.example.mymovis.R
+import com.example.mymovis.adapters.MovieAdapter
 import com.example.mymovis.data.MainViewModel
 import com.example.mymovis.data.Movie
 import com.example.mymovis.utils.JSONUtils
 import com.example.mymovis.utils.NetworkUtils
-import org.json.JSONObject
 
 
 class MainActivity : AppCompatActivity() {

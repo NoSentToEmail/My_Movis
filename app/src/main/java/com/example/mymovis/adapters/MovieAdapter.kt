@@ -1,10 +1,11 @@
-package com.example.mymovis
+package com.example.mymovis.adapters
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.mymovis.R
 import com.example.mymovis.data.Movie
 import com.squareup.picasso.Picasso
 

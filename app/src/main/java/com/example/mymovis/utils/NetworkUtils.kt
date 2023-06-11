@@ -14,6 +14,11 @@ class NetworkUtils {
 
     private val API_KEY = "e12b9ed2023f9ce765d45a1deddfe191"
     private val BASE_URL = "https://api.themoviedb.org/3/discover/movie"
+
+    private val BASE_URL_VIDEOS = "https://api.themoviedb.org/3/movie/%s/videos"
+    private val BASE_URL_REVIEWS = "https://api.themoviedb.org/3/movie/%s/reviews"
+
+
     private val PARAMS_API_KEY = "api_key"
     private val PARAMS_LANGUAGE = "language"
     private val PARAMS_SORT_BY = "sort_by"
@@ -26,6 +31,7 @@ class NetworkUtils {
 
     val POPULARITY = 0
     val TOP_RATED = 1
+
 
 
     private fun buildURL(sortBy: Int, page: Int): URL? {
@@ -43,6 +49,58 @@ class NetworkUtils {
             .build()
         try {
             result = URL(url.toString())
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return result
+    }
+    //Добавление отзывов с инета
+    private fun buildURLToREVIEWS(id: Int): URL? {
+        val url = Uri.parse(String.format(BASE_URL_REVIEWS, id)).buildUpon()
+            .appendQueryParameter(PARAMS_API_KEY, API_KEY)
+            .appendQueryParameter(PARAMS_LANGUAGE, LANGUAGE_VALUE).build()
+        try {
+            return URL(url.toString())
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return null
+    }
+
+
+    //Добавление отзывов с инета(реализация)
+   fun getJSONForReviews(id: Int): JSONObject? {
+        var result: JSONObject? = null
+        val url = buildURLToREVIEWS(id)
+        try {
+            result = JSONLoadTask().execute(url).get()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return result
+    }
+
+    //Добавление получения видео с инета
+
+    private fun buildURLToVideos(id: Int): URL? {
+        val url = Uri.parse(String.format(BASE_URL_VIDEOS, id)).buildUpon()
+            .appendQueryParameter(PARAMS_API_KEY, API_KEY)
+            .appendQueryParameter(PARAMS_LANGUAGE, LANGUAGE_VALUE).build()
+        try {
+            return URL(url.toString())
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return null
+    }
+
+
+    //Добавление получения видео с инета(реализация)
+    fun getJSONForVideos(id: Int): JSONObject? {
+        var result: JSONObject? = null
+        val url = buildURLToVideos(id)
+        try {
+            result = JSONLoadTask().execute(url).get()
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -69,7 +127,7 @@ class NetworkUtils {
             if (params == null || params.size == 0) {
                 return result
             }
-            var connection:HttpURLConnection? = null
+            var connection: HttpURLConnection? = null
             try {
                 connection = params[0]?.openConnection() as HttpURLConnection
                 val inputStream: InputStream = connection.inputStream
