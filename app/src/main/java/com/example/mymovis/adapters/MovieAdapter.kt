@@ -41,7 +41,7 @@ class MovieAdapter : RecyclerView.Adapter<MovieAdapter.MovieViewHolder>() {
 
     override fun onBindViewHolder(holder: MovieViewHolder, position: Int) {
 
-        if (movies.size >= 20 &&  position >= movies.size -4 && onReachEndListener != null) {
+        if (movies.size >= 20 &&  position >= movies.size -1 && onReachEndListener != null) {
             onReachEndListener?.onReachEnd()
         }
         val movie = movies[position]
@@ -62,6 +62,11 @@ class MovieAdapter : RecyclerView.Adapter<MovieAdapter.MovieViewHolder>() {
             this.movies.addAll(it)
             notifyDataSetChanged()
         }
+    }
+
+    fun clear(){
+        this.movies.clear()
+        notifyDataSetChanged()
     }
 
     fun getMovies(): MutableList<Movie> {

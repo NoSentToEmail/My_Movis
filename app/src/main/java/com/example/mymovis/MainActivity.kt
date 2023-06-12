@@ -5,9 +5,12 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
+import android.widget.ProgressBar
 import android.widget.Switch
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.view.isInvisible
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.loader.app.LoaderManager
@@ -19,6 +22,9 @@ import com.example.mymovis.data.MainViewModel
 import com.example.mymovis.data.Movie
 import com.example.mymovis.utils.JSONUtils
 import com.example.mymovis.utils.NetworkUtils
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.json.JSONObject
 
 
@@ -28,13 +34,17 @@ class MainActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<JSONObje
     private lateinit var switchSort: Switch
     private lateinit var textViewPopularity: TextView
     private lateinit var textViewTopRated: TextView
+    private lateinit var progressBarLoading: ProgressBar
 
-    private val LOADER_ID = 0
+    private var jsonData: JSONObject? = null // Добавьте переменную для хранения данных
+
+
+    private val LOADER_ID = 124
     private lateinit var loaderManager: LoaderManager
 
     private var isLoading = false
 
-    private var page = 1
+    private var page: Int = 1
     private var methodOfSort = 0
 
     private lateinit var viewModel: MainViewModel
@@ -48,6 +58,7 @@ class MainActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<JSONObje
     private val onReachEndListener = object : MovieAdapter.OnReachEndListener {
         override fun onReachEnd() {
             if (!isLoading) {
+                isLoading = true
                 downloadData(methodOfSort, page)
             }
         }
@@ -66,6 +77,7 @@ class MainActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<JSONObje
         textViewPopularity = findViewById(R.id.textViewPopularity)
         textViewTopRated = findViewById(R.id.textViewTopRated)
         recyclerViewPoster = findViewById(R.id.recyclerViewPoster)
+        progressBarLoading = findViewById(R.id.progressBarLoading)
         recyclerViewPoster.layoutManager = GridLayoutManager(this, 2)
         movieAdapter = MovieAdapter()
         recyclerViewPoster.adapter = movieAdapter
@@ -101,9 +113,8 @@ class MainActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<JSONObje
 
 
         viewModel.getMovies().observe(this, Observer { movies ->
-            if (movies != null) {
-
-            } else {
+            if (page == 1) {
+                movieAdapter.setMovies(movies as MutableList<Movie>)
             }
         })
     }
@@ -148,13 +159,19 @@ class MainActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<JSONObje
         val bundle = Bundle()
         bundle.putString("url", url.toString())
         loaderManager.restartLoader(LOADER_ID, bundle, this)
+
+        isLoading = false
     }
 
     override fun onCreateLoader(id: Int, args: Bundle?): Loader<JSONObject> {
         val jsonLoader = NetworkUtils.JSONLoader(this, args)
-        jsonLoader.setOnStartLoadingListener(object : NetworkUtils.JSONLoader.OnStartLoadingListener {
+        jsonLoader.setOnStartLoadingListener(object :
+            NetworkUtils.JSONLoader.OnStartLoadingListener {
             override fun onStartLoading() {
-                isLoading = true
+                progressBarLoading.visibility =
+                    View.VISIBLE // Для установки видимости прогресс-бара
+                    isLoading = true
+
                 // Дополнительный код, выполняющийся при начале загрузки
                 // Например, обновление пользовательского интерфейса или отображение индикатора загрузки
             }
@@ -163,8 +180,7 @@ class MainActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<JSONObje
     }
 
     override fun onLoaderReset(loader: Loader<JSONObject>) {
-        val jsonObject = loader as JSONObject? // Получение объекта JSONObject из Loader
-        val movies = jsonObject?.let { JSONUtils().getMoviesFromJSON(it) }
+        val movies = jsonData?.let { JSONUtils().getMoviesFromJSON(it) }
         if (movies != null && movies.isNotEmpty()) {
             viewModel.deleteAllMovies()
             for (movie in movies) {
@@ -176,19 +192,27 @@ class MainActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<JSONObje
 
     override fun onLoadFinished(loader: Loader<JSONObject>, data: JSONObject?) {
         if (data != null) {
+            jsonData = data // Сохраняем данные в переменную jsonData
             val movies = JSONUtils().getMoviesFromJSON(data)
-            if (movies.isNotEmpty()) {
-                viewModel.deleteAllMovies()
+            if (movies != null && movies.isNotEmpty()) {
+                if (page == 1) {
+                    viewModel.deleteAllMovies()
+                    movieAdapter.clear()
+                }
                 for (movie in movies) {
                     viewModel.insert(movie)
                 }
                 movieAdapter.setMovies(movies as MutableList<Movie>)
                 recyclerViewPoster.scrollToPosition(0)
-                page++
+
             }
         }
-        isLoading = false
         loaderManager.destroyLoader(LOADER_ID)
-    }
+        isLoading = false
+        progressBarLoading.visibility = View.INVISIBLE // Для установки невидимости прогресс-бара
+        page++
 
+
+
+    }
 }
