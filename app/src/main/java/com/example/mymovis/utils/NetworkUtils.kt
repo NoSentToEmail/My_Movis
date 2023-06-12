@@ -1,7 +1,10 @@
 package com.example.mymovis.utils
 
+import android.content.Context
 import android.net.Uri
 import android.os.AsyncTask
+import android.os.Bundle
+import androidx.loader.content.AsyncTaskLoader
 import org.json.JSONObject
 import java.io.BufferedReader
 import java.io.InputStream
@@ -23,18 +26,19 @@ class NetworkUtils {
     private val PARAMS_LANGUAGE = "language"
     private val PARAMS_SORT_BY = "sort_by"
     private val PARAMS_PAGE = "page"
+    private val PARAM_MIN_VOTE_COUNT = "vote_count.gte"
 
     private val LANGUAGE_VALUE = "ru-RU"
     private val SORT_BY_POPULARITY = "popularity.desc"
     private val SORT_BY_TOP_RATED = "vote_average.desc"
+    private val MIN_VOTE_COUNT_VALUE = "1000"
 
 
     val POPULARITY = 0
     val TOP_RATED = 1
 
 
-
-    private fun buildURL(sortBy: Int, page: Int): URL? {
+     fun buildURL(sortBy: Int, page: Int): URL? {
         var result: URL? = null
         val methodSort = if (sortBy == POPULARITY) {
             SORT_BY_POPULARITY
@@ -45,6 +49,7 @@ class NetworkUtils {
             .appendQueryParameter(PARAMS_API_KEY, API_KEY)
             .appendQueryParameter(PARAMS_LANGUAGE, LANGUAGE_VALUE)
             .appendQueryParameter(PARAMS_SORT_BY, methodSort)
+            .appendQueryParameter(PARAM_MIN_VOTE_COUNT, MIN_VOTE_COUNT_VALUE)
             .appendQueryParameter(PARAMS_PAGE, page.toString())
             .build()
         try {
@@ -54,8 +59,9 @@ class NetworkUtils {
         }
         return result
     }
+
     //Добавление отзывов с инета
-    private fun buildURLToREVIEWS(id: Int): URL? {
+     fun buildURLToREVIEWS(id: Int): URL? {
         val url = Uri.parse(String.format(BASE_URL_REVIEWS, id)).buildUpon()
             .appendQueryParameter(PARAMS_API_KEY, API_KEY).build()
         try {
@@ -68,7 +74,7 @@ class NetworkUtils {
 
 
     //Добавление отзывов с инета(реализация)
-   fun getJSONForReviews(id: Int): JSONObject? {
+    fun getJSONForReviews(id: Int): JSONObject? {
         var result: JSONObject? = null
         val url = buildURLToREVIEWS(id)
         try {
@@ -81,7 +87,7 @@ class NetworkUtils {
 
     //Добавление получения видео с инета
 
-    private fun buildURLToVideos(id: Int): URL? {
+     fun buildURLToVideos(id: Int): URL? {
         val url = Uri.parse(String.format(BASE_URL_VIDEOS, id)).buildUpon()
             .appendQueryParameter(PARAMS_API_KEY, API_KEY)
             .appendQueryParameter(PARAMS_LANGUAGE, LANGUAGE_VALUE).build()
@@ -106,6 +112,66 @@ class NetworkUtils {
         return result
     }
 
+    //Подгрузка данных с сети без ограничений
+    class JSONLoader(context: Context, private val bundle: Bundle?) : AsyncTaskLoader<JSONObject>(context) {
+
+        private lateinit var onStartLoadingListener: OnStartLoadingListener
+        interface OnStartLoadingListener {
+            fun onStartLoading()
+        }
+        fun setOnStartLoadingListener(onStartLoadingListener: OnStartLoadingListener){
+            this.onStartLoadingListener = onStartLoadingListener
+        }
+
+        override fun loadInBackground(): JSONObject? {
+            if (bundle == null) {
+                return JSONObject()
+            }
+            val urlAsStrung = bundle.getString("url")
+            var url: URL? = null
+            try {
+                url = URL(urlAsStrung)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+            var result: JSONObject? = null
+
+            if (url == null) {
+                return null
+            }
+            var connection: HttpURLConnection? = null
+            try {
+                connection = url.openConnection() as HttpURLConnection
+                val inputStream: InputStream = connection.inputStream
+                val inputStreamReader: InputStreamReader? = if (inputStream != null) InputStreamReader(inputStream) else null
+                val reader: BufferedReader? = if (inputStreamReader != null) BufferedReader(inputStreamReader) else null
+                val builder = StringBuilder()
+                var line = reader?.readLine()
+                while (line != null) {
+                    builder.append(line)
+                    line = reader?.readLine()
+
+                }
+                result = JSONObject(builder.toString())
+            } catch (e: Exception) {
+                e.printStackTrace()
+            } finally {
+                if (connection != null) {
+                    connection.disconnect()
+                }
+            }
+            return result
+        }
+
+        override fun onStartLoading() {
+            super.onStartLoading()
+            if(onStartLoadingListener != null){
+                onStartLoadingListener.onStartLoading()
+            }
+            forceLoad()
+        }
+    }
+
 
     fun getJSONFromNetwork(sortBy: Int, page: Int): JSONObject? {
         var result: JSONObject? = null
@@ -119,7 +185,7 @@ class NetworkUtils {
     }
 
 
-    private class JSONLoadTask : AsyncTask<URL, Void, JSONObject>() {
+     class JSONLoadTask : AsyncTask<URL, Void, JSONObject>() {
         override fun doInBackground(vararg params: URL?): JSONObject? {
             var result: JSONObject? = null
 

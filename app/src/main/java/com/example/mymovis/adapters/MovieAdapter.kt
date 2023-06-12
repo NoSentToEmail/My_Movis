@@ -41,7 +41,7 @@ class MovieAdapter : RecyclerView.Adapter<MovieAdapter.MovieViewHolder>() {
 
     override fun onBindViewHolder(holder: MovieViewHolder, position: Int) {
 
-        if (position >= movies.size -6 && onReachEndListener != null) {
+        if (movies.size >= 20 &&  position >= movies.size -4 && onReachEndListener != null) {
             onReachEndListener?.onReachEnd()
         }
         val movie = movies[position]

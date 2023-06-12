@@ -1,10 +1,12 @@
 package com.example.mymovis.utils
 
 import android.util.Log
+import androidx.loader.content.Loader
 import com.example.mymovis.data.Movie
 import com.example.mymovis.data.Review
 import com.example.mymovis.data.Trailer
 import org.json.JSONObject
+import org.json.JSONArray
 
 class JSONUtils {
     //вся информация о фильме
